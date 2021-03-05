@@ -1,0 +1,102 @@
+---
+title: "Task 17"
+author: "Victoria Lau"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:  
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+#install.packages("tidyverse") # run this line once in console to get package
+library(tidyverse)
+library(stringi)
+library(lubridate)
+#install.packages("lubridate")
+
+```
+
+```{r load_data}
+# Use this R-Chunk to import all your datasets!
+
+waitlist<- read_csv(url("https://byuistats.github.io/M335/data/waitlist_DP_108.csv"))
+waitlist
+```
+
+## Background
+
+Have you ever been on a wait-list for a class? It can be pretty nerve racking, especially if all your other classes and your work schedule depend on getting into that particular class in that particular time slot.
+
+I obtained transnational data from the registration system for Math108 (Math in the Real World) sections I taught in Fall2016, Winter2017, and Fall2017. I wanted to do some analysis to help waitlisted students better understand their chances of getting in. To simplify this task, we will only look at 1 section: FDMAT108-18.
+
+## Data Wrangling
+
+```{r tidy_data}
+# Use this R-Chunk to clean & wrangle your data!
+waitlist %>%
+mutate(date = lubridate::mdy_hms('Registration Date'))
+waitlist %>% arrange(desc(mdy(waitlist$'Registration Date')))
+
+
+waitlist1 <- waitlist %>% 
+  rename(
+    Course_Sec = 'Course Sec',
+    Waitlist_Reason = 'Waitlist Reason'
+    )
+
+waitlist2 <- waitlist1 %>% 
+filter(Course_Sec == 'FDMAT108-18')
+
+# waitlist2[order(as.Date(waitlist2$date, format="%m/%d/%Y %h/%m"))]
+# View(waitlist2)
+```
+
+#Function 1
+```{r function1}
+registered_percentage <- function(p){
+  (p/77) * 100
+}
+Y <- count(waitlist2, R = Waitlist_Reason == 'Waitlist Registered')  %>% 
+  filter(R == TRUE) %>% 
+  select(n) 
+registered_percentage(Y)
+#count(waitlist2, Status == 'Registered')
+#count(waitlist2, Waitlist_Reason == 'Waitlist Registered')
+```
+
+#Function 2
+```{r function2}
+waitlist_percentage <- function(w){
+  (w/67) *100
+}
+#count(waitlist2, Status == 'Wait List')
+#count(waitlist2, Waitlist_Reason == 'Waitlist Registered')
+W <- count(waitlist2, R = Waitlist_Reason == 'Waitlist Registered')  %>% 
+  filter(R == TRUE) %>% 
+  select(n) 
+waitlist_percentage(Y)
+
+
+
+
+```
+
+## Data Visualization
+
+```{r plot_data}
+# Use this R-Chunk to plot & visualize your data!
+
+```
+
+## Conclusions
